@@ -15,14 +15,16 @@ import sgfmill.boards
 import sgfmill.ascii_boards
 from typing import Tuple, List, Optional, Union, Literal
 
-Color = Union[Literal["b"],Literal["w"]]
-Move = Union[Literal["pass"],Tuple[int,int]]
+Color = Union[Literal["b"], Literal["w"]]
+Move = Union[Literal["pass"], Tuple[int, int]]
+
 
 def sgfmill_to_str(move: Move) -> str:
     if move == "pass":
         return "pass"
-    (y,x) = move
-    return "ABCDEFGHJKLMNOPQRSTUVWXYZ"[x] + str(y+1)
+    (y, x) = move
+    return "ABCDEFGHJKLMNOPQRSTUVWXYZ"[x] + str(y + 1)
+
 
 class KataGo:
 
@@ -35,6 +37,7 @@ class KataGo:
             stderr=subprocess.PIPE,
         )
         self.katago = katago
+
         def printforever():
             while katago.poll() is None:
                 data = katago.stderr.readline()
@@ -44,26 +47,26 @@ class KataGo:
             data = katago.stderr.read()
             if data:
                 print("KataGo: ", data.decode(), end="")
+
         self.stderrthread = Thread(target=printforever)
         self.stderrthread.start()
 
     def close(self):
         self.katago.stdin.close()
 
-
-    def query(self, initial_board: sgfmill.boards.Board, moves: List[Tuple[Color,Move]], komi: float, max_visits=None):
+    def query(self, initial_board: sgfmill.boards.Board, moves: List[Tuple[Color, Move]], komi: float, max_visits=None):
         query = {}
 
         query["id"] = str(self.query_counter)
         self.query_counter += 1
 
-        query["moves"] = [(color,sgfmill_to_str(move)) for color, move in moves]
+        query["moves"] = [(color, sgfmill_to_str(move)) for color, move in moves]
         query["initialStones"] = []
         for y in range(initial_board.side):
             for x in range(initial_board.side):
-                color = initial_board.get(y,x)
+                color = initial_board.get(y, x)
                 if color:
-                    query["initialStones"].append((color,sgfmill_to_str((y,x))))
+                    query["initialStones"].append((color, sgfmill_to_str((y, x))))
         query["rules"] = "Chinese"
         query["komi"] = komi
         query["boardXSize"] = initial_board.side
@@ -90,6 +93,7 @@ class KataGo:
         # print(response)
         return response
 
+
 if __name__ == "__main__":
     description = """
     Example script showing how to run KataGo analysis engine and query it from python.
@@ -98,32 +102,37 @@ if __name__ == "__main__":
     parser.add_argument(
         "-katago-path",
         help="Path to katago executable",
-        required=True,
+        # required=True,
     )
     parser.add_argument(
         "-config-path",
         help="Path to KataGo analysis config (e.g. cpp/configs/analysis_example.cfg in KataGo repo)",
-        required=True,
+        # required=True,
     )
     parser.add_argument(
         "-model-path",
         help="Path to neural network .bin.gz file",
-        required=True,
+        # required=True,
     )
     args = vars(parser.parse_args())
+    args['katago_path'] = "/Users/puyuan/code/KataGo/cpp/katago"
+    args['config_path'] = "/Users/puyuan/code/KataGo/cpp/analysis_custom.cfg"
+    args['model_path'] = "/Users/puyuan/code/KataGo/kata1-b18c384nbt-s6582191360-d3422816034.bin.gz"
+    # args['model_path'] = "/Users/puyuan/code/KataGo/cpp/g170-b30c320x2-s4824661760-d1229536699.bin.gz"
+
     print(args)
 
     katago = KataGo(args["katago_path"], args["config_path"], args["model_path"])
 
     board = sgfmill.boards.Board(19)
     komi = 6.5
-    moves = [("b",(3,3))]
+    moves = [("b", (3, 3))]
 
     displayboard = board.copy()
     for color, move in moves:
         if move != "pass":
-            row,col = move
-            displayboard.play(row,col,color)
+            row, col = move
+            displayboard.play(row, col, color)
     print(sgfmill.ascii_boards.render_board(displayboard))
 
     print("Query result: ")

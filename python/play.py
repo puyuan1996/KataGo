@@ -34,6 +34,10 @@ parser.add_argument('-use-swa', help='Use SWA model', action="store_true", requi
 
 args = vars(parser.parse_args())
 
+# TODO(pu)
+args['checkpoint'] = "/Users/puyuan/code/KataGo/kata1-b18c384nbt-s6582191360-d3422816034/model.ckpt"
+# print(args)
+
 checkpoint_file = args["checkpoint"]
 use_swa = args["use_swa"]
 
@@ -85,7 +89,7 @@ def get_outputs(gs, rules):
         # This function assumes N(HW)C order but we actually use NCHW order, so work with it and revert
         bin_input_data = np.transpose(bin_input_data,axes=(0,2,3,1))
         bin_input_data = bin_input_data.reshape([1,pos_len*pos_len,-1])
-        features.fill_row_features(gs.board,pla,opp,gs.boards,gs.moves,move_idx,rules,bin_input_data,global_input_data,idx=0)
+        features.fill_row_features(gs.board, pla, opp, gs.boards, gs.moves, move_idx, rules, bin_input_data, global_input_data, idx=0)
         bin_input_data = bin_input_data.reshape([1,pos_len,pos_len,-1])
         bin_input_data = np.transpose(bin_input_data,axes=(0,3,1,2))
 
@@ -144,7 +148,7 @@ def get_outputs(gs, rules):
         move = features.tensor_pos_to_loc(i,board)
         if i == len(policy0)-1:
             moves_and_probs0.append((Board.PASS_LOC,policy0[i]))
-        elif board.would_be_legal(board.pla,move):
+        elif board.would_be_legal(board.pla, move):
             moves_and_probs0.append((move,policy0[i]))
 
     moves_and_probs1 = []
@@ -229,7 +233,7 @@ def get_outputs(gs, rules):
     # Interpolate from moving uniformly to choosing from the triangular distribution
     alpha = 1
     beta = 1 + math.sqrt(max(0,len(gs.moves)-20))
-    r = np.random.beta(alpha,beta)
+    r = np.random.beta(alpha, beta)
     probsum = 0.0
     i = 0
     genmove_result = Board.PASS_LOC
@@ -657,9 +661,9 @@ while True:
         rules["whiteKomi"] = float(command[1])
     elif command[0] == "play":
         pla = (Board.BLACK if command[1] == "B" or command[1] == "b" else Board.WHITE)
-        loc = parse_coord(command[2],gs.board)
-        gs.board.play(pla,loc)
-        gs.moves.append((pla,loc))
+        loc = parse_coord(command[2], gs.board)
+        gs.board.play(pla, loc)
+        gs.moves.append((pla, loc))
         gs.boards.append(gs.board.copy())
     elif command[0] == "genmove":
         outputs = get_outputs(gs, rules)
