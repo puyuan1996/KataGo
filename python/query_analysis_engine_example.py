@@ -98,19 +98,24 @@ if __name__ == "__main__":
     parser.add_argument(
         "-katago-path",
         help="Path to katago executable",
-        required=True,
+        # required=True,
     )
     parser.add_argument(
         "-config-path",
         help="Path to KataGo analysis config (e.g. cpp/configs/analysis_example.cfg in KataGo repo)",
-        required=True,
+        # required=True,
     )
     parser.add_argument(
         "-model-path",
         help="Path to neural network .bin.gz file",
-        required=True,
+        # required=True,
     )
     args = vars(parser.parse_args())
+    args['katago_path'] = "/mnt/nfs/puyuan/KataGo/cpp/katago"
+    args['config_path'] = "/mnt/nfs/puyuan/KataGo/cpp/analysis_custom.cfg"
+    args['model_path'] = "/mnt/nfs/puyuan/KataGo/kata1-b18c384nbt-s6582191360-d3422816034.bin.gz"
+    # args['model_path'] = "/mnt/nfs/puyuan/KataGo/cpp/g170-b30c320x2-s4824661760-d1229536699.bin.gz"
+
     print(args)
 
     katago = KataGo(args["katago_path"], args["config_path"], args["model_path"])

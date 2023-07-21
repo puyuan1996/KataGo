@@ -9,16 +9,24 @@ import packaging.version
 from typing import List, Dict, Optional
 
 import modelconfigs
-
+    
 EXTRA_SCORE_DISTR_RADIUS = 60
 
+class Mish(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
+
+    def forward(self, x):
+        return x * torch.tanh(torch.nn.functional.softplus(x))
+    
 def act(activation, inplace=False):
     if activation == "relu":
         return torch.nn.ReLU(inplace=inplace)
     if activation == "elu":
         return torch.nn.ELU(inplace=inplace)
     if activation == "mish":
-        return torch.nn.Mish(inplace=inplace)
+        return Mish()
+        # return torch.nn.Mish(inplace=inplace)
     if activation == "gelu":
         return torch.nn.GELU(inplace=inplace)
     if activation == "hardswish":

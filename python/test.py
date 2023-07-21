@@ -31,17 +31,28 @@ if __name__ == "__main__":
     """
 
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('-npzdir', help='Directory with npz data', required=True)
+    # parser.add_argument('-npzdir', help='Directory with npz data', required=True)
+    parser.add_argument('-npzdir', help='Directory with npz data', required=False)
+
     parser.add_argument('-model-kind', help='If specified, use this model kind instead of config', required=False)
     parser.add_argument('-config', help='Path to model.config.json', required=False)
     parser.add_argument('-checkpoint', help='Checkpoint to test', required=False)
-    parser.add_argument('-pos-len', help='Spatial length of expected training data', type=int, required=True)
-    parser.add_argument('-batch-size', help='Batch size to use for testing', type=int, required=True)
+    # parser.add_argument('-pos-len', help='Spatial length of expected training data', type=int, required=True)
+    # parser.add_argument('-batch-size', help='Batch size to use for testing', type=int, required=True)
+    parser.add_argument('-pos-len', help='Spatial length of expected training data', type=int, required=False)
+    parser.add_argument('-batch-size', help='Batch size to use for testing', type=int, required=False)
     parser.add_argument('-use-swa', help='Use SWA model', action="store_true", required=False)
     parser.add_argument('-max-batches', help='Maximum number of batches for testing', type=int, required=False)
     parser.add_argument('-gpu-idx', help='GPU idx', type=int, required=False)
 
     args = vars(parser.parse_args())
+
+    # TODO(pu): only for debug
+    args["npzdir"] = '/mnt/nfs/puyuan/KataGo/python/selfplay/katago_training_2_for_test_train/shuffleddata/current/train/'
+    args["pos_len"] = 19
+    args["batch_size"] = 128
+    args['model_kind'] = 'b1c6nbt'
+    args["checkpoint"] = '/mnt/nfs/puyuan/KataGo/python/selfplay/katago_training_2_for_test_train/train/sp_test/checkpoint.ckpt'
 
 def main(args):
     npzdir = args["npzdir"]

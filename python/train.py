@@ -55,14 +55,21 @@ if __name__ == "__main__":
         help='show this help message and exit'
     )
 
-    required_args.add_argument('-traindir', help='Dir to write to for recording training results', required=True)
-    required_args.add_argument('-datadir', help='Directory with a train and val subdir of npz data, output by shuffle.py', required=True)
+    # required_args.add_argument('-traindir', help='Dir to write to for recording training results', required=True)
+    required_args.add_argument('-traindir', help='Dir to write to for recording training results', required=False)
+
+    # required_args.add_argument('-datadir', help='Directory with a train and val subdir of npz data, output by shuffle.py', required=True)
+    required_args.add_argument('-datadir', help='Directory with a train and val subdir of npz data, output by shuffle.py', required=False)
+
     optional_args.add_argument('-exportdir', help='Directory to export models periodically', required=False)
     optional_args.add_argument('-exportprefix', help='Prefix to append to names of models', required=False)
     optional_args.add_argument('-initial-checkpoint', help='If no training checkpoint exists, initialize from this checkpoint', required=False)
 
-    required_args.add_argument('-pos-len', help='Spatial edge length of expected training data, e.g. 19 for 19x19 Go', type=int, required=True)
-    required_args.add_argument('-batch-size', help='Per-GPU batch size to use for training', type=int, required=True)
+    # required_args.add_argument('-pos-len', help='Spatial edge length of expected training data, e.g. 19 for 19x19 Go', type=int, required=True)
+    required_args.add_argument('-pos-len', help='Spatial edge length of expected training data, e.g. 19 for 19x19 Go', type=int, required=False)
+    # required_args.add_argument('-batch-size', help='Per-GPU batch size to use for training', type=int, required=True)
+    required_args.add_argument('-batch-size', help='Per-GPU batch size to use for training', type=int, required=False)
+
     optional_args.add_argument('-samples-per-epoch', help='Number of data samples to consider as one epoch', type=int, required=False)
     optional_args.add_argument('-model-kind', help='String name for what model config to use', required=False)
     optional_args.add_argument('-lr-scale', help='LR multiplier on the hardcoded schedule', type=float, required=False)
@@ -106,6 +113,13 @@ if __name__ == "__main__":
     optional_args.add_argument('-intermediate-loss-scale', type=float, help='Loss factor scale for intermediate head', required=False)
 
     args = vars(parser.parse_args())
+
+    # TODO(pu): only for debug
+    args["traindir"] = '/mnt/nfs/puyuan/KataGo/python/selfplay/katago_training_2_for_test_train/train/sp_test'
+    args["datadir"] = '/mnt/nfs/puyuan/KataGo/python/selfplay/katago_training_2_for_test_train/shuffleddata/current/'
+    args["pos_len"] = 19
+    args["batch_size"] = 128
+    args['model_kind'] = 'b1c6nbt'
 
 
 def get_longterm_checkpoints_dir(traindir):
@@ -1303,3 +1317,4 @@ if __name__ == "__main__":
         world_size = 1
         barrier = None
         main(rank, world_size, args, multi_gpu_device_ids, readpipes, writepipes, barrier)
+
